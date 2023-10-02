@@ -1,0 +1,50 @@
+trigger:
+- master
+
+pr: none
+
+jobs:
+- job: DeployWindowsService
+  displayName: 'Deploy Windows Service to Servers'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - powershell: |
+      echo " 1: Take backup of existing deployment folder "
+      Copy-Item -Path C:\SampleAPP\* -Destination C:\Backup\$(Build.BuildId) -Recurse -Force
+
+      echo " 2: Stop the service
+      Stop-Service -Name "SampleService" -Force
+
+      echo " 3: Build the repo"
+      Expand-Archive C:\SampleService.zip -DestinationPath C:\SampleAPP\$(Build.BuildId)
+
+      echo " 4: Replace new DLLs in Deployment folder "
+      Copy-Item -Path C:\SampleAPP\$(Build.BuildId)\* -Destination C:\SampleAPP -Recurse -Force
+
+      echo " 5: Restart service if deployment fails
+      trap {
+        Write-Host "Deployment failed. Rolling back changes. "
+        Copy-Item -Path C:\Backup\$(Build.BuildId)\* -Destination C:\SampleAPP -Recurse -Force
+        Start-Service -Name "SampleService"
+        exit 1
+      }
+
+      echo " 6: Restart service if deployment succeeds ""
+      Start-Service -Name "SampleService"
+    displayName: 'Deploy Windows Service'
+    continueOnError: true
+
+# Define rollback job in case of failure
+- job: Rollback
+  displayName: 'Rollback Changes'
+  dependsOn: DeployWindowsService
+  condition: succeededOrFailed()
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - powershell: |
+      # Rollback changes by copying the backup back to the deployment folder
+      Copy-Item -Path C:\Backup\$(Build.BuildId)\* -Destination C:\SampleAPP -Recurse -Force
+      Start-Service -Name "SampleService"
+    displayName: 'Rollback Deployment'

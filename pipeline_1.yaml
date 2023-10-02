@@ -1,0 +1,52 @@
+trigger:
+- master
+
+pr: none
+
+jobs:
+- job: DeployAPI
+  displayName: 'Deploy API to Servers'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - powershell: |
+      echo "Take backup of existing deployment folder"
+      Copy-Item -Path C:\SampleAPP\* -Destination C:\Backup\$(Build.BuildId) -Recurse -Force
+
+      echo "Stop App pool and website in IIS"
+      Stop-WebAppPool -Name "SampleAPP"
+      Stop-Website -Name "SampleWebsiteApp"
+
+      echo "Step 3: Build the repo"
+      Expand-Archive C:\SampleAPP.zip -DestinationPath C:\SampleAPP\$(Build.BuildId)
+
+      echo "Step 4: Replace new DLLs in Deployment folder"
+      Copy-Item -Path C:\SampleAPP\$(Build.BuildId)\* -Destination C:\SampleAPP -Recurse -Force
+
+      echo  "Step 5: Restart app pool and website in IIS if deployment fails"
+      trap {
+        Write-Host "Deployment failed. Rolling back changes."
+        Copy-Item -Path C:\Backup\$(Build.BuildId)\* -Destination C:\SampleAPP -Recurse -Force
+        Start-WebAppPool -Name "SampleAPP"
+        Start-Website -Name "SampleWebsiteApp"
+        exit 1
+      }
+
+      echo "Step 6: Restart app pool and website in IIS if deployment succeeds"
+      Start-WebAppPool -Name "SampleAPP"
+      Start-Website -Name "SampleWebsiteApp"
+    displayName: 'Deploy API'
+    continueOnError: true
+
+# Define rollback job in case of failure
+- job: Rollback
+  displayName: 'Rollback Changes'
+  dependsOn: DeployAPI
+  condition: succeededOrFailed()
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - powershell: |
+      # Rollback changes by copying the backup back to the deployment folder
+      Copy-Item -Path C:\Backup\$(Build.BuildId)\* -Destination C:\SampleAPP -Recurse -Force
+    displayName: 'Rollback Deployment'
