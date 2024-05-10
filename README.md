@@ -4,7 +4,7 @@
 
 [Include a brief overview of the project here.]
 
-## Testing Documentation
+## Testing and Code Scanning Documentation
 
 | Aspect              | Frontend (Angular)                                                                   | Backend (Java)                                                                     |
 |---------------------|--------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
