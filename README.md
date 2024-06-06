@@ -1,104 +1,54 @@
-# ACME
+Tagging é uma funcionalidade que permite marcar pontos específicos na história de um repositório como importantes. Geralmente, essas tags são usadas para marcar lançamentos de versões de softwares (por exemplo, v1.0, v2.1.3, etc.), facilitando a identificação de conjuntos de alterações ou a recuperação de estados específicos do código.
 
-## Overview
+### Como Funciona o Tagging:
 
-[Include a brief overview of the project here.]
+**1. Tags Leves (Lightweight)**: Uma tag leve é como um apelido para um commit específico. Ela é um ponteiro estático para esse commit. Tags leves são criadas com o comando:
 
-## Testing and Code Scanning Documentation
+```sh
+git tag <tagname>
+```
 
-| Aspect              | Frontend (Angular)                                                                   | Backend (Java)                                                                     |
-|---------------------|--------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| **Testing Framework** | Jest                                                                                 | JUnit                                                                              |
-| **Unit Testing**     | - Run tests with `npm test`<br>- Write tests in `src/app`<br>- Coverage: Jest built-in | - Run tests with `mvn test`<br>- Write tests in `src/test/java`<br>- Coverage: JaCoCo |
-| **Integration Testing** | - Run tests with `npm test`<br>- Write tests in `src/app`<br>- Coverage: Jest built-in | - Run tests with `mvn test`<br>- Write tests in `src/test/java`<br>- Coverage: JaCoCo |
-| **Exporting Results to SonarQube** | Execute `sonar-scanner` after running tests                             | Execute `mvn sonar:sonar` after running tests                                     |
+**2. Tags Anotadas (Annotated)**: Uma tag anotada é armazenada como um objeto completo no banco de dados do Git. Ela contém o nome do tagger (a pessoa que criou a tag), e-mail, data e tem uma mensagem associada que pode ser fornecida pelo usuário. Tags anotadas são criadas com o comando:
 
-## Installation
+```sh
+git tag -a <tagname> -m "mensagem da tag"
+```
 
-[Include installation instructions here.]
+Tags anotadas são recomendadas porque incluem informações adicionais úteis, como a identidade do criador da tag e a data.
 
-## Usage
+### Operações Comuns com Tags:
 
-[Include usage instructions here.]
+**Listando Tags**:
+Para listar todas as tags de um repositório, use:
+```sh
+git tag
+```
 
-## Contributing
+**Visualizando Informações da Tag**:
+Para ver as informações da tag anotada e o commit que ela marca, use:
+```sh
+git show <tagname>
+```
 
-[Include contributing guidelines here.]
+**Deletando Tags**:
+Para deletar uma tag local, use:
+```sh
+git tag -d <tagname>
+```
 
-## License
+**Publicando Tags**:
+Por padrão, o comando `git push` não transfere tags para repositórios remotos. Para enviar uma tag para o seu repositório remoto, use:
+```sh
+git push origin <tagname>
+```
 
-[Include license information here.]
+Para enviar todas as tags locais que ainda não existem no repositório remoto, use:
+```sh
+git push origin --tags
+```
 
-## Testing Instructions
-
-### Frontend (Angular Application)
-
-#### Unit Testing with Jest
-
-##### Overview
-
-Unit testing is performed using the Jest framework. Jest is a delightful JavaScript testing framework with a focus on simplicity.
-
-##### Instructions
-
-1. **Running Unit Tests Locally:**
-   - Navigate to the Angular application directory.
-   - Run the following command:
-     ```bash
-     npm test
-     ```
-   - This command will execute all unit tests and display the results in the console.
-
-2. **Writing Unit Tests:**
-   - Unit tests are located in the `src/app` directory, alongside the components and services they are testing.
-   - Each test file should have a `.spec.ts` extension.
-   - Use Jest's testing utilities and matchers to write descriptive and accurate tests.
-
-3. **Test Coverage:**
-   - Jest provides built-in coverage reporting.
-   - After running tests, a coverage report will be generated in the `coverage` directory.
-   - Review the report to ensure adequate test coverage.
-
-4. **Exporting Results to SonarQube:**
-   - Configure SonarQube in your project's CI/CD pipeline.
-   - After running unit tests, execute the following command to export test results to SonarQube:
-     ```bash
-     sonar-scanner
-     ```
-
-### Backend (Java Application)
-
-#### Unit Testing with JUnit
-
-##### Overview
-
-Unit testing in the Java application is performed using the JUnit framework. JUnit is a simple framework to write repeatable tests.
-
-##### Instructions
-
-1. **Running Unit Tests Locally:**
-   - Navigate to the Java application directory.
-   - Run the following command to execute unit tests:
-     ```bash
-     mvn test
-     ```
-   - This command will run all unit tests and display the results in the console.
-
-2. **Writing Unit Tests:**
-   - Unit tests are located in the `src/test/java` directory, separate from production code.
-   - Each test class should have a corresponding class in the `src/main/java` directory.
-   - Use JUnit annotations and assertions to write effective tests.
-
-3. **Test Coverage:**
-   - Test coverage is measured using JaCoCo, a code coverage library.
-   - After running tests, a coverage report will be generated in the `target/site/jacoco` directory.
-   - Open the HTML report in a browser to view code coverage statistics.
-
-4. **Exporting Results to SonarQube:**
-   - Configure SonarQube in your project's CI/CD pipeline.
-   - After running unit tests, execute the following command to export test results to SonarQube:
-     ```bash
-     mvn sonar:sonar
-     ```
-
-You can copy and paste this Markdown content into your README.md file. Feel free to customize the sections as needed! Let me know if you need any further assistance!
+**Checkout de uma Tag**:
+Para verificar o código em uma tag específica, você pode fazer checkout com:
+```sh
+git checkout tags/<tagname>
+```
