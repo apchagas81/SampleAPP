@@ -1,4 +1,3 @@
-```markdown
 # Tagging in Git Repositories
 
 Tagging is a feature in version control systems like Git, used in platforms such as GitHub and GitLab, to mark specific points in a repository's history as significant. Typically, tags are used to mark software release versions (e.g., v1.0, v2.1.3, etc.), making it easier to identify sets of changes or retrieve specific states of the code.
@@ -67,4 +66,3 @@ git checkout tags/<tagname>
 ```
 
 This is a basic overview of how to use tags in repositories like GitHub and GitLab. If you need more information or have questions about specific practices for Koch Industries, I'm here to assist!
-```
